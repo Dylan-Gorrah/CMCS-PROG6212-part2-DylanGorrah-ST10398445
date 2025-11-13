@@ -1,0 +1,46 @@
+﻿@model CMS_ASSIGNMENT.Controllers.LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="login-container">
+    <div class="login-card">
+        <h2>Login to DG CMS System</h2>
+        <form asp-action="Login" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" placeholder="Enter your email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password"></label>
+                <input asp-for="Password" type="password" class="form-control" placeholder="Enter your password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-group" style="display: flex; align-items: center; margin-bottom: 25px;">
+                <input asp-for="RememberMe" class="form-check-input" />
+                <label asp-for="RememberMe" class="form-check-label" style="margin: 0; margin-left: 8px;"></label>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;"><span>Login</span></button>
+        </form>
+
+        <div class="text-center" style="margin-top: 30px;">
+            <small style="color: var(--dusty-rose);">Demo Accounts:</small><br>
+            <small style="color: var(--dusty-rose); opacity: 0.8;">Manager: admin@university.com / Admin123!</small><br>
+            <small style="color: var(--dusty-rose); opacity: 0.8;">Lecturer: lecturer@university.com / Lecturer123!</small><br>
+            <small style="color: var(--dusty-rose); opacity: 0.8;">Coordinator: coordinator@university.com / Coordinator123!</small>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

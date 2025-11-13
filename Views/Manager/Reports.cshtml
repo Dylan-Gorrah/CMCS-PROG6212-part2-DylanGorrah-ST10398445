@@ -1,0 +1,56 @@
+﻿@{
+    ViewData["Title"] = "Reports";
+    var user = ViewBag.User as CMS_ASSIGNMENT.Models.ApplicationUser;
+}
+
+<div class="dashboard-header">
+    <h2>Reports Dashboard</h2>
+    <div>
+        <span class="text-muted">@user?.Role.ToString() Reports</span>
+        <a href="@Url.Action("Index", "Manager")" class="btn btn-outline-primary" style="margin-left: 15px;"><span>Back to Dashboard</span></a>
+    </div>
+</div>
+
+<div class="cards-grid" style="margin-top: 50px;">
+    <div class="card">
+        <div class="card-icon">📊</div>
+        <h3>Monthly Claims Report</h3>
+        <p>Generate comprehensive monthly claims report with detailed analytics and insights.</p>
+        <button class="btn btn-primary" onclick="generateReport('monthly')" style="margin-top: 20px;"><span>Generate</span></button>
+    </div>
+    
+    <div class="card">
+        <div class="card-icon">👨‍🏫</div>
+        <h3>Lecturer Performance</h3>
+        <p>View claims and performance metrics by lecturer with comprehensive breakdowns.</p>
+        <button class="btn btn-primary" onclick="generateReport('lecturer')" style="margin-top: 20px;"><span>Generate</span></button>
+    </div>
+    
+    <div class="card">
+        <div class="card-icon">💰</div>
+        <h3>Financial Summary</h3>
+        <p>Financial overview and totals with detailed expense tracking and analysis.</p>
+        <button class="btn btn-primary" onclick="generateReport('financial')" style="margin-top: 20px;"><span>Generate</span></button>
+    </div>
+</div>
+
+<div id="reportResult" class="card" style="margin-top: 50px; display: none; animation: fadeInUp 0.5s ease;">
+    <h3 style="margin-bottom: 20px; color: var(--peach);">Report Results</h3>
+    <p id="reportContent" style="color: var(--dusty-rose); margin-bottom: 25px;">Report content will appear here...</p>
+    <button class="btn btn-success" onclick="downloadReport()"><span>Download PDF</span></button>
+</div>
+
+@section Scripts {
+    <script>
+        function generateReport(type) {
+            // Simulate report generation
+            document.getElementById('reportContent').textContent =
+                `Generated ${type} report for ${new Date().toLocaleDateString()}. This would contain actual data in a real application.`;
+            document.getElementById('reportResult').style.display = 'block';
+        }
+
+        function downloadReport() {
+            alert('PDF download functionality would be implemented here with a library like iTextSharp.');
+        }
+    </script>
+}

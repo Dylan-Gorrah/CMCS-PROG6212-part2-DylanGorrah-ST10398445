@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "DG CMS System";
+}
+
+<div class="hero">
+    <h1>Welcome to<br>DG CMS System</h1>
+    <p class="subtitle">Select your role to continue</p>
+</div>
+
+<div class="role-selection">
+    <div class="role-card" onclick="location.href='@Url.Action("Index", "Lecturer")'">
+        <div class="role-icon">👨‍🏫</div>
+        <h3 class="role-title">Lecturer</h3>
+        <p class="role-description">Submit claims, track status, and upload supporting documents</p>
+        <button class="btn btn-primary" style="margin-top: 20px;"><span>Enter Dashboard</span></button>
+    </div>
+
+    <div class="role-card" onclick="location.href='@Url.Action("Index", "Coordinator")'">
+        <div class="role-icon">👔</div>
+        <h3 class="role-title">Coordinator</h3>
+        <p class="role-description">Review, approve or reject claims submitted by lecturers</p>
+        <button class="btn btn-primary" style="margin-top: 20px;"><span>Enter Dashboard</span></button>
+    </div>
+
+    <div class="role-card" onclick="location.href='@Url.Action("Index", "Manager")'">
+        <div class="role-icon">👤</div>
+        <h3 class="role-title">Manager</h3>
+        <p class="role-description">Final approval of claims and generate reports</p>
+        <button class="btn btn-primary" style="margin-top: 20px;"><span>Enter Dashboard</span></button>
+    </div>
+</div>

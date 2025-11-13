@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Claims Management System</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <!-- Particles Background -->
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1>Claims Management System</h1>
+                <div class="header-controls">
+                    @if (User?.Identity?.IsAuthenticated == true)
+                    {
+                        <div class="nav-buttons">
+                            <a href="javascript:history.back()" class="back-button">← Back</a>
+                            <form asp-controller="Account" asp-action="Logout" method="post" class="logout-form">
+                                <button type="submit" class="logout-button">Logout (@User.Identity?.Name)</button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <main role="main">
+            @RenderBody()
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="dev-tag">
+                Developed by <a href="#" target="_blank">Dylan Gorrah</a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

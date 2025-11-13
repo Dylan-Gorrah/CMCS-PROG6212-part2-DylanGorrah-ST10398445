@@ -1,0 +1,126 @@
+﻿@model IEnumerable<CMS_ASSIGNMENT.ViewModels.ClaimListViewModel>
+@{
+    ViewData["Title"] = "Lecturer Dashboard";
+    var user = ViewBag.User as CMS_ASSIGNMENT.Models.ApplicationUser;
+}
+
+<div class="dashboard-header">
+    <h2>Welcome, @user?.FirstName!</h2>
+    <div>
+        <span class="text-muted">@user?.Role.ToString() Dashboard</span>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card">
+    <h3>Submit New Claim</h3>
+    <form asp-action="SubmitClaim" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label>Hours Worked</label>
+            <input type="number" name="HoursWorked" class="form-control" placeholder="Enter hours (1-200)" min="1" max="200" required>
+        </div>
+        <div class="form-group">
+            <label>Hourly Rate (ZAR)</label>
+            <input type="number" name="HourlyRate" class="form-control" placeholder="Enter rate in ZAR" min="0" max="10000" step="0.01" required>
+        </div>
+        <div class="form-group">
+            <label>Upload Supporting Document</label>
+            <input type="file" name="Document" class="form-control" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+            <small style="color: var(--dusty-rose); opacity: 0.7; margin-top: 5px; display: block;">Maximum file size: 5MB. Allowed formats: PDF, JPG, PNG, DOC, DOCX</small>
+        </div>
+        <button type="submit" class="btn btn-primary"><span>Submit Claim</span></button>
+    </form>
+</div>
+
+<h3 style="margin-top: 50px; margin-bottom: 30px; color: var(--peach); font-size: 28px;">Your Claims</h3>
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        You haven't submitted any claims yet.
+    </div>
+}
+else
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Claim ID</th>
+                <th>Date Submitted</th>
+                <th>Hours</th>
+                <th>Rate (ZAR)</th>
+                <th>Amount (ZAR)</th>
+                <th>Status</th>
+                <th>Document</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var claim in Model)
+            {
+                <tr>
+                    <td>@claim.Id</td>
+                    <td>@claim.SubmittedDate.ToString("yyyy-MM-dd")</td>
+                    <td>@claim.HoursWorked</td>
+                    <td>R @claim.HourlyRate</td>
+                    <td>R @claim.TotalAmount.ToString("N2")</td>
+                    <td>
+                        <span class="badge @GetStatusBadgeClass(claim.Status)">@claim.Status</span>
+                    </td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(claim.DocumentFileName))
+                        {
+                            <a href="@Url.Action("DownloadDocument", new { id = claim.Id })" class="btn btn-sm btn-outline-primary">
+                                Download
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="text-muted">No document</span>
+                        }
+                    </td>
+                    <td>
+                        <button class="btn btn-sm" onclick="viewClaim(@claim.Id)">View</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@section Scripts {
+    <script>
+        function viewClaim(claimId) {
+            alert('View details for claim ID: ' + claimId);
+            // In a real application, you would show a modal with claim details
+        }
+    </script>
+}
+
+@functions {
+    private string GetStatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            "Pending" => "bg-warning",
+            "ApprovedByCoordinator" => "bg-info",
+            "ApprovedByManager" => "bg-success",
+            "RejectedByCoordinator" or "RejectedByManager" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+}

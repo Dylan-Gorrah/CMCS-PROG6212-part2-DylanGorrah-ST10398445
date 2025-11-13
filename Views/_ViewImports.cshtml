@@ -1,0 +1,33 @@
+﻿@using CMS_ASSIGNMENT
+@using CMS_ASSIGNMENT.Models
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@if (User?.Identity?.IsAuthenticated == true)
+{
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+        <div class="container">
+            <div class="navbar-nav">
+                <a class="nav-link" href="@Url.Action("Index", "Home")">Home</a>
+
+                @if (User.IsInRole("Lecturer"))
+                {
+                    <a class="nav-link" href="@Url.Action("Index", "Lecturer")">My Claims</a>
+                }
+                @if (User.IsInRole("Coordinator"))
+                {
+                    <a class="nav-link" href="@Url.Action("Index", "Coordinator")">Review Claims</a>
+                }
+                @if (User.IsInRole("Manager"))
+                {
+                    <a class="nav-link" href="@Url.Action("Index", "Manager")">Dashboard</a>
+                    <a class="nav-link" href="@Url.Action("Reports", "Manager")">Reports</a>
+                }
+
+                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                    <button type="submit" class="nav-link btn btn-link" style="border: none; background: none;">
+                        Logout (@User.Identity?.Name)
+                    </button>
+                </form>
+            </div>
+        </div>
+    </nav>
+}
