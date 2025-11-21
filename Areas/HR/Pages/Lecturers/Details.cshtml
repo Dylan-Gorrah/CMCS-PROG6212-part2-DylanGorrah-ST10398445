@@ -1,0 +1,127 @@
+@page "{id}"
+@model CMS_ASSIGNMENT.Areas.HR.Pages.Lecturers.DetailsModel
+@{
+    ViewData["Title"] = "Lecturer Details";
+}
+
+<div class="dashboard-header">
+    <div>
+        <h2>@Model.Lecturer.FullName</h2>
+        <div class="text-muted">@Model.Lecturer.Email</div>
+    </div>
+    <div class="action-buttons">
+        <a asp-page="./Edit" asp-route-id="@Model.Lecturer.Id" class="btn btn-primary"><span>Edit Profile</span></a>
+        <a asp-page="./Index" class="btn btn-outline-primary"><span>Back to Directory</span></a>
+    </div>
+</div>
+
+<div class="cards-grid" style="margin-top: 30px;">
+    <div class="card">
+        <h4>Total Claims</h4>
+        <p class="metric">@Model.Lecturer.TotalClaims</p>
+        <small>Submitted across all periods</small>
+    </div>
+    <div class="card">
+        <h4>Approved Claims</h4>
+        <p class="metric">@Model.Lecturer.ApprovedClaims</p>
+        <small>Total paid out: R @Model.Lecturer.TotalApprovedAmount.ToString("N2")</small>
+    </div>
+    <div class="card">
+        <h4>Pending Claims</h4>
+        <p class="metric">@Model.Lecturer.PendingClaims</p>
+        <small>Awaiting coordinator/manager action</small>
+    </div>
+    <div class="card">
+        <h4>Flagged Claims</h4>
+        <p class="metric @((Model.Lecturer.FlaggedClaims > 0) ? "text-warning" : "text-success")">@Model.Lecturer.FlaggedClaims</p>
+        <small>Require policy review</small>
+    </div>
+</div>
+
+<div class="card" style="margin-top: 40px;">
+    <h3>Profile Information</h3>
+    <dl class="row">
+        <dt class="col-sm-3">Full Name</dt>
+        <dd class="col-sm-9">@Model.Lecturer.FullName</dd>
+
+        <dt class="col-sm-3">Email</dt>
+        <dd class="col-sm-9">@Model.Lecturer.Email</dd>
+
+        <dt class="col-sm-3">Phone</dt>
+        <dd class="col-sm-9">@(string.IsNullOrWhiteSpace(Model.Lecturer.PhoneNumber) ? "—" : Model.Lecturer.PhoneNumber)</dd>
+
+        <dt class="col-sm-3">Last Submitted</dt>
+        <dd class="col-sm-9">@(Model.Lecturer.LastSubmitted?.ToString("yyyy-MM-dd") ?? "—")</dd>
+    </dl>
+</div>
+
+<div class="card" style="margin-top: 40px;">
+    <h3>Claims History</h3>
+    @if (!Model.Claims.Any())
+    {
+        <div class="alert alert-info">No claims have been submitted by this lecturer yet.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Submitted</th>
+                        <th>Hours</th>
+                        <th>Rate (ZAR)</th>
+                        <th>Total (ZAR)</th>
+                        <th>Status</th>
+                        <th>Flags</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var claim in Model.Claims)
+                    {
+                        <tr>
+                            <td>@claim.Id</td>
+                            <td>@claim.SubmittedDate.ToString("yyyy-MM-dd")</td>
+                            <td>@claim.HoursWorked</td>
+                            <td>R @claim.HourlyRate.ToString("N2")</td>
+                            <td>R @claim.TotalAmount.ToString("N2")</td>
+                            <td><span class="badge @GetStatusBadgeClass(claim.Status)">@claim.Status</span></td>
+                            <td>
+                                @if (claim.HasBlockingViolations)
+                                {
+                                    <span class="badge bg-danger">Blocked</span>
+                                }
+                                else if (claim.IsFlaggedForReview)
+                                {
+                                    <span class="badge bg-warning text-dark">Review</span>
+                                }
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(claim.FlaggedReasons))
+                                {
+                                    <div class="text-muted" style="max-width: 260px;">@claim.FlaggedReasons</div>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">—</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@functions {
+    private string GetStatusBadgeClass(string status) => status switch
+    {
+        "Pending" => "bg-warning",
+        "ApprovedByCoordinator" => "bg-info",
+        "ApprovedByManager" => "bg-success",
+        "RejectedByCoordinator" or "RejectedByManager" => "bg-danger",
+        _ => "bg-secondary"
+    };
+}

@@ -1,0 +1,132 @@
+@page
+@model CMS_ASSIGNMENT.Areas.HR.Pages.Reports.SummaryModel
+@{
+    ViewData["Title"] = "Payment Summaries";
+}
+
+<div class="dashboard-header">
+    <h2>Payment Summary Reports</h2>
+    <div>
+        <a asp-page="/Index" class="btn btn-outline-primary"><span>Back to HR Dashboard</span></a>
+    </div>
+</div>
+
+<div class="card" style="margin-top: 25px;">
+    <h3>Generate Report</h3>
+    <form method="get" class="row g-3" style="margin-top: 10px;">
+        <div class="col-md-3">
+            <label asp-for="Year" class="form-label">Year</label>
+            <input asp-for="Year" type="number" class="form-control" min="2020" max="2100" />
+        </div>
+        <div class="col-md-3">
+            <label asp-for="Month" class="form-label">Month</label>
+            <input asp-for="Month" type="number" class="form-control" min="1" max="12" />
+            <div class="form-text">Leave month blank to use date range.</div>
+        </div>
+        <div class="col-md-3">
+            <label asp-for="StartDate" class="form-label">Start Date</label>
+            <input asp-for="StartDate" type="date" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label asp-for="EndDate" class="form-label">End Date</label>
+            <input asp-for="EndDate" type="date" class="form-control" />
+        </div>
+        <div class="col-md-12" style="display:flex; gap:10px; margin-top:10px;">
+            <button type="submit" class="btn btn-primary"><span>Generate</span></button>
+            <a asp-page="./Summary" class="btn btn-outline-secondary"><span>Reset</span></a>
+        </div>
+    </form>
+</div>
+
+@if (Model.Report == null)
+{
+    <div class="alert alert-info" style="margin-top: 30px;">
+        Choose a month or date range to generate a report.
+    </div>
+}
+else
+{
+    <div class="cards-grid" style="margin-top: 30px;">
+        <div class="card">
+            <h4>Total Claims</h4>
+            <p class="metric">@Model.Report.TotalClaims</p>
+        </div>
+        <div class="card">
+            <h4>Approved</h4>
+            <p class="metric">@Model.Report.ApprovedClaims</p>
+        </div>
+        <div class="card">
+            <h4>Pending</h4>
+            <p class="metric">@Model.Report.PendingClaims</p>
+        </div>
+        <div class="card">
+            <h4>Rejected</h4>
+            <p class="metric">@Model.Report.RejectedClaims</p>
+        </div>
+        <div class="card">
+            <h4>Total Approved Amount</h4>
+            <p class="metric">R @Model.Report.TotalAmount.ToString("N2")</p>
+        </div>
+    </div>
+
+    <div class="d-flex" style="margin-top: 20px; gap: 10px;">
+        <form method="post" asp-page-handler="Download">
+            <input type="hidden" name="Year" value="@Model.Year" />
+            <input type="hidden" name="Month" value="@Model.Month" />
+            <input type="hidden" name="StartDate" value="@(Model.StartDate?.ToString("yyyy-MM-dd"))" />
+            <input type="hidden" name="EndDate" value="@(Model.EndDate?.ToString("yyyy-MM-dd"))" />
+            <button type="submit" class="btn btn-success"><span>Download Report</span></button>
+        </form>
+    </div>
+
+    <div class="card" style="margin-top: 30px;">
+        <h3>Claim Breakdown</h3>
+        @if (!Model.Report.Claims.Any())
+        {
+            <div class="alert alert-info">No claims in this period.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Claim ID</th>
+                            <th>Lecturer</th>
+                            <th>Date Submitted</th>
+                            <th>Hours</th>
+                            <th>Rate (ZAR)</th>
+                            <th>Total (ZAR)</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var claim in Model.Report.Claims)
+                        {
+                            <tr>
+                                <td>@claim.Id</td>
+                                <td>@claim.LecturerName</td>
+                                <td>@claim.SubmittedDate.ToString("yyyy-MM-dd")</td>
+                                <td>@claim.HoursWorked</td>
+                                <td>R @claim.HourlyRate.ToString("N2")</td>
+                                <td>R @claim.TotalAmount.ToString("N2")</td>
+                                <td><span class="badge @GetStatusBadgeClass(claim.Status)">@claim.Status</span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+}
+
+@functions {
+    private string GetStatusBadgeClass(string status) => status switch
+    {
+        "Pending" => "bg-warning",
+        "ApprovedByCoordinator" => "bg-info",
+        "ApprovedByManager" => "bg-success",
+        "RejectedByCoordinator" or "RejectedByManager" => "bg-danger",
+        _ => "bg-secondary"
+    };
+}

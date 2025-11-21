@@ -27,6 +27,7 @@ namespace CMS_ASSIGNMENT.Controllers
                         UserRole.Lecturer => RedirectToAction("Index", "Lecturer"),
                         UserRole.Coordinator => RedirectToAction("Index", "Coordinator"),
                         UserRole.Manager => RedirectToAction("Index", "Manager"),
+                        UserRole.HR => RedirectToPage("/Index", new { area = "HR" }),
                         _ => View()
                     };
                 }

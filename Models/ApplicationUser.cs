@@ -27,6 +27,7 @@ namespace CMS_ASSIGNMENT.Models
     {
         Lecturer,
         Coordinator,
-        Manager
+        Manager,
+        HR
     }
 }

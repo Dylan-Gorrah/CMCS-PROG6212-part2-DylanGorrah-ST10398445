@@ -1,0 +1,88 @@
+@page
+@model CMS_ASSIGNMENT.Areas.HR.Pages.Reports.InvoicesModel
+@{
+    ViewData["Title"] = "Approved Claim Invoices";
+}
+
+<div class="dashboard-header">
+    <h2>Approved Claim Invoices</h2>
+    <div>
+        <a asp-page="/Index" class="btn btn-outline-primary"><span>Back to HR Dashboard</span></a>
+    </div>
+</div>
+
+<form method="get" class="filter-form" style="margin-top: 25px; display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end;">
+    <div class="form-group" style="flex: 1 1 260px;">
+        <label asp-for="SearchTerm">Search</label>
+        <input asp-for="SearchTerm" class="form-control" placeholder="Search by lecturer or claim ID" />
+    </div>
+    <div class="form-group" style="width: 140px;">
+        <button type="submit" class="btn btn-primary" style="width: 100%;"><span>Apply</span></button>
+    </div>
+    <div class="form-group" style="width: 140px;">
+        <a class="btn btn-outline-secondary" asp-page="./Invoices"><span>Reset</span></a>
+    </div>
+</form>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 20px;">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (!Model.Claims.Any())
+{
+    <div class="alert alert-info" style="margin-top: 30px;">
+        No approved claims found for the current filters.
+    </div>
+}
+else
+{
+    <div class="table-responsive" style="margin-top: 30px;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Claim ID</th>
+                    <th>Lecturer</th>
+                    <th>Approved Date</th>
+                    <th>Total Amount (ZAR)</th>
+                    <th>Flag</th>
+                    <th>Notes</th>
+                    <th style="width: 160px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var claim in Model.Claims)
+                {
+                    <tr>
+                        <td>@claim.Id</td>
+                        <td>
+                            <div><strong>@claim.LecturerName</strong></div>
+                            <div class="text-muted">@claim.LecturerEmail</div>
+                        </td>
+                        <td>@(claim.ApprovedDate?.ToString("yyyy-MM-dd") ?? "—")</td>
+                        <td>R @claim.TotalAmount.ToString("N2")</td>
+                        <td>
+                            @if (claim.IsFlaggedForReview)
+                            {
+                                <span class="badge bg-warning text-dark">Review</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Clear</span>
+                            }
+                        </td>
+                        <td>@(string.IsNullOrWhiteSpace(claim.FlaggedReasons) ? "—" : claim.FlaggedReasons)</td>
+                        <td>
+                            <form method="post" asp-page-handler="Download" asp-route-claimId="@claim.Id" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-primary"><span>Download Invoice</span></button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

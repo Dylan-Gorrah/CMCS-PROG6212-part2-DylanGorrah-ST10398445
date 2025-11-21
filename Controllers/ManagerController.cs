@@ -4,6 +4,7 @@ using CMS_ASSIGNMENT.Interfaces;
 using CMS_ASSIGNMENT.ViewModels;
 using CMS_ASSIGNMENT.Models;
 using Microsoft.AspNetCore.Identity;
+using System.Linq;
 
 namespace CMS_ASSIGNMENT.Controllers
 {
@@ -35,8 +36,18 @@ namespace CMS_ASSIGNMENT.Controllers
                 HourlyRate = c.HourlyRate,
                 TotalAmount = c.TotalAmount,
                 Status = c.Status.ToString(),
-                DocumentFileName = c.DocumentFileName
+                DocumentFileName = c.DocumentFileName,
+                IsFlaggedForReview = c.IsFlaggedForReview,
+                HasBlockingViolations = c.HasBlockingViolations,
+                FlaggedReasons = c.FlaggedReasons
             }).ToList();
+
+            ViewBag.PendingNotification = new
+            {
+                Total = viewModel.Count,
+                Flagged = viewModel.Count(c => c.IsFlaggedForReview),
+                Blocking = viewModel.Count(c => c.HasBlockingViolations)
+            };
 
             ViewBag.User = user;
             return View(viewModel);
@@ -46,10 +57,27 @@ namespace CMS_ASSIGNMENT.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ApproveClaim(int id)
         {
+            var claim = await _claimService.GetClaimByIdAsync(id);
+            if (claim == null || claim.Status != ClaimStatus.ApprovedByCoordinator)
+            {
+                TempData["ErrorMessage"] = "Unable to locate the requested claim.";
+                return RedirectToAction("Index");
+            }
+
+            if (claim.HasBlockingViolations)
+            {
+                TempData["ErrorMessage"] = string.IsNullOrWhiteSpace(claim.FlaggedReasons)
+                    ? "Claim contains blocking policy violations and cannot be approved."
+                    : $"Claim cannot be approved: {claim.FlaggedReasons}";
+                return RedirectToAction("Index");
+            }
+
             var result = await _claimService.ApproveClaimByManagerAsync(id);
             if (result)
             {
-                TempData["SuccessMessage"] = "Claim approved successfully!";
+                TempData["SuccessMessage"] = claim.IsFlaggedForReview
+                    ? "Claim approved with caution – review alerts noted."
+                    : "Claim approved successfully!";
             }
             else
             {

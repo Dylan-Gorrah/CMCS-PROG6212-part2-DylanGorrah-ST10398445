@@ -40,6 +40,9 @@ namespace CMS_ASSIGNMENT.ViewModels
         public DateTime? RejectedDate { get; set; }
         public string? ApprovedByName { get; set; }
         public string? RejectedByName { get; set; }
+        public bool IsFlaggedForReview { get; set; }
+        public bool HasBlockingViolations { get; set; }
+        public string? FlaggedReasons { get; set; }
     }
 
     public class ClaimDetailsViewModel
@@ -60,6 +63,9 @@ namespace CMS_ASSIGNMENT.ViewModels
         public DateTime? RejectedDate { get; set; }
         public string? ApprovedByName { get; set; }
         public string? RejectedByName { get; set; }
+        public bool IsFlaggedForReview { get; set; }
+        public bool HasBlockingViolations { get; set; }
+        public string? FlaggedReasons { get; set; }
     }
 
     public class LecturerProfileViewModel

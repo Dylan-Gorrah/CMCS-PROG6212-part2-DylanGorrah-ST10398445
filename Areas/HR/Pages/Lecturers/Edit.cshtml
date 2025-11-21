@@ -1,0 +1,58 @@
+@page
+@model CMS_ASSIGNMENT.Areas.HR.Pages.Lecturers.EditModel
+@{
+    ViewData["Title"] = "Edit Lecturer";
+}
+
+<div class="dashboard-header">
+    <h2>Edit Lecturer Profile</h2>
+    <div>
+        <a asp-page="./Index" class="btn btn-outline-primary"><span>Back to Directory</span></a>
+    </div>
+</div>
+
+<div class="card" style="margin-top: 30px;">
+    <h3>Lecturer Information</h3>
+    <form method="post">
+        <input type="hidden" asp-for="Input.Id" />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="Input.FirstName"></label>
+            <input asp-for="Input.FirstName" class="form-control" />
+            <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Input.LastName"></label>
+            <input asp-for="Input.LastName" class="form-control" />
+            <span asp-validation-for="Input.LastName" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Input.Email"></label>
+            <input asp-for="Input.Email" class="form-control" />
+            <span asp-validation-for="Input.Email" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Input.PhoneNumber"></label>
+            <input asp-for="Input.PhoneNumber" class="form-control" />
+            <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+        </div>
+        <hr />
+        <h4>Reset Password (optional)</h4>
+        <p class="text-muted">Leave blank to keep the current password.</p>
+        <div class="form-group">
+            <label asp-for="Input.NewPassword"></label>
+            <input asp-for="Input.NewPassword" class="form-control" />
+            <span asp-validation-for="Input.NewPassword" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Input.ConfirmPassword"></label>
+            <input asp-for="Input.ConfirmPassword" class="form-control" />
+            <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary"><span>Save Changes</span></button>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

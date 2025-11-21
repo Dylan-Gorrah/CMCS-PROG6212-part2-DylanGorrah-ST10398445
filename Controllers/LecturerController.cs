@@ -35,7 +35,10 @@ namespace CMS_ASSIGNMENT.Controllers
                 HourlyRate = c.HourlyRate,
                 TotalAmount = c.TotalAmount,
                 Status = c.Status.ToString(),
-                DocumentFileName = c.DocumentFileName
+                DocumentFileName = c.DocumentFileName,
+                IsFlaggedForReview = c.IsFlaggedForReview,
+                HasBlockingViolations = c.HasBlockingViolations,
+                FlaggedReasons = c.FlaggedReasons
             }).ToList();
 
             ViewBag.User = user;
@@ -103,7 +106,10 @@ namespace CMS_ASSIGNMENT.Controllers
                 HourlyRate = c.HourlyRate,
                 TotalAmount = c.TotalAmount,
                 Status = c.Status.ToString(),
-                DocumentFileName = c.DocumentFileName
+                DocumentFileName = c.DocumentFileName,
+                IsFlaggedForReview = c.IsFlaggedForReview,
+                HasBlockingViolations = c.HasBlockingViolations,
+                FlaggedReasons = c.FlaggedReasons
             }).ToList();
 
             return View("Index", viewModel);

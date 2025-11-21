@@ -29,14 +29,21 @@
 
 <div class="card">
     <h3>Submit New Claim</h3>
-    <form asp-action="SubmitClaim" method="post" enctype="multipart/form-data">
+    <form asp-action="SubmitClaim" method="post" enctype="multipart/form-data" id="submit-claim-form">
         <div class="form-group">
             <label>Hours Worked</label>
-            <input type="number" name="HoursWorked" class="form-control" placeholder="Enter hours (1-200)" min="1" max="200" required>
+            <input type="number" name="HoursWorked" class="form-control" placeholder="Enter hours (1-200)" min="1" max="200" step="0.25" required>
+            <small class="validation-message" data-error-for="HoursWorked"></small>
         </div>
         <div class="form-group">
             <label>Hourly Rate (ZAR)</label>
             <input type="number" name="HourlyRate" class="form-control" placeholder="Enter rate in ZAR" min="0" max="10000" step="0.01" required>
+            <small class="validation-message" data-error-for="HourlyRate"></small>
+        </div>
+        <div class="form-group" id="total-wrapper">
+            <label>Total Amount (ZAR)</label>
+            <input type="text" id="calculated-total" class="form-control" value="R 0.00" readonly>
+            <small class="text-muted">Calculated automatically as Hours × Rate.</small>
         </div>
         <div class="form-group">
             <label>Upload Supporting Document</label>
@@ -104,6 +111,100 @@ else
 
 @section Scripts {
     <script>
+        (function () {
+            const form = document.getElementById('submit-claim-form');
+            const hoursInput = form?.querySelector('input[name="HoursWorked"]');
+            const rateInput = form?.querySelector('input[name="HourlyRate"]');
+            const totalInput = document.getElementById('calculated-total');
+            const hoursError = document.querySelector('[data-error-for="HoursWorked"]');
+            const rateError = document.querySelector('[data-error-for="HourlyRate"]');
+
+            function formatCurrency(value) {
+                return `R ${value.toFixed(2)}`;
+            }
+
+            function updateTotal() {
+                if (!hoursInput || !rateInput || !totalInput) return;
+                const hours = parseFloat(hoursInput.value);
+                const rate = parseFloat(rateInput.value);
+
+                if (Number.isFinite(hours) && Number.isFinite(rate) && hours >= 0 && rate >= 0) {
+                    totalInput.value = formatCurrency(hours * rate);
+                } else {
+                    totalInput.value = 'R 0.00';
+                }
+            }
+
+            function validateField(input, errorElement, constraints) {
+                if (!input || !errorElement) return true;
+
+                const value = parseFloat(input.value);
+                const isEmpty = input.value.trim() === '';
+
+                if (isEmpty) {
+                    errorElement.textContent = 'This field is required.';
+                    input.classList.add('is-invalid');
+                    return false;
+                }
+
+                if (Number.isNaN(value)) {
+                    errorElement.textContent = 'Enter a valid number.';
+                    input.classList.add('is-invalid');
+                    return false;
+                }
+
+                if (constraints.min !== undefined && value < constraints.min) {
+                    errorElement.textContent = `Value must be at least ${constraints.min}.`;
+                    input.classList.add('is-invalid');
+                    return false;
+                }
+
+                if (constraints.max !== undefined && value > constraints.max) {
+                    errorElement.textContent = `Value cannot exceed ${constraints.max}.`;
+                    input.classList.add('is-invalid');
+                    return false;
+                }
+
+                if (constraints.step && (value * (1 / constraints.step)) % 1 !== 0) {
+                    errorElement.textContent = `Value must be a multiple of ${constraints.step}.`;
+                    input.classList.add('is-invalid');
+                    return false;
+                }
+
+                errorElement.textContent = '';
+                input.classList.remove('is-invalid');
+                return true;
+            }
+
+            function attachValidation() {
+                if (!hoursInput || !rateInput || !form) return;
+
+                hoursInput.addEventListener('input', () => {
+                    validateField(hoursInput, hoursError, { min: 1, max: 200, step: 0.25 });
+                    updateTotal();
+                });
+
+                rateInput.addEventListener('input', () => {
+                    validateField(rateInput, rateError, { min: 0, max: 10000, step: 0.01 });
+                    updateTotal();
+                });
+
+                form.addEventListener('submit', (event) => {
+                    const hoursValid = validateField(hoursInput, hoursError, { min: 1, max: 200, step: 0.25 });
+                    const rateValid = validateField(rateInput, rateError, { min: 0, max: 10000, step: 0.01 });
+                    updateTotal();
+
+                    if (!hoursValid || !rateValid) {
+                        event.preventDefault();
+                    }
+                });
+
+                updateTotal();
+            }
+
+            attachValidation();
+        })();
+
         function viewClaim(claimId) {
             alert('View details for claim ID: ' + claimId);
             // In a real application, you would show a modal with claim details

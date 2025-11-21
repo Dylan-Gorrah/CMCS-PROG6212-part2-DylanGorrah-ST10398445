@@ -52,6 +52,13 @@ namespace CMS_ASSIGNMENT.Models
 
         public long? DocumentSize { get; set; }
 
+        public bool IsFlaggedForReview { get; set; }
+
+        public bool HasBlockingViolations { get; set; }
+
+        [StringLength(750)]
+        public string? FlaggedReasons { get; set; }
+
         // Navigation properties
         public virtual ApplicationUser? Lecturer { get; set; }
         public virtual ApplicationUser? Coordinator { get; set; }

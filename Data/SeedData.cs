@@ -8,7 +8,7 @@ namespace CMS_ASSIGNMENT.Data
         public static async Task Initialize(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             // Create roles
-            string[] roleNames = { "Lecturer", "Coordinator", "Manager" };
+            string[] roleNames = { "Lecturer", "Coordinator", "Manager", "HR" };
 
             foreach (var roleName in roleNames)
             {
@@ -79,6 +79,27 @@ namespace CMS_ASSIGNMENT.Data
                 if (createCoordinator.Succeeded)
                 {
                     await userManager.AddToRoleAsync(coordinatorUser, "Coordinator");
+                }
+            }
+
+            // Create HR user
+            var hrUser = new ApplicationUser
+            {
+                UserName = "hr@university.com",
+                Email = "hr@university.com",
+                FirstName = "Harper",
+                LastName = "Reed",
+                Role = UserRole.HR,
+                EmailConfirmed = true
+            };
+
+            var hrExists = await userManager.FindByEmailAsync(hrUser.Email);
+            if (hrExists == null)
+            {
+                var createHr = await userManager.CreateAsync(hrUser, "HrAdmin123!");
+                if (createHr.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(hrUser, "HR");
                 }
             }
         }

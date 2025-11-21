@@ -1,0 +1,49 @@
+@page
+@model CMS_ASSIGNMENT.Areas.HR.Pages.IndexModel
+@{
+    ViewData["Title"] = "HR Dashboard";
+}
+
+<div class="dashboard-header">
+    <h2>HR Operations Center</h2>
+    <div>
+        <span class="text-muted">@User.Identity?.Name</span>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="cards-grid" style="margin-top: 40px;">
+    <div class="card">
+        <div class="card-icon">🧑‍🏫</div>
+        <h3>Lecturer Profiles</h3>
+        <p>Manage lecturer personal information, contact details, and employment status.</p>
+        <a class="btn btn-primary" asp-page="/Lecturers/Index"><span>Open Profiles</span></a>
+    </div>
+    <div class="card">
+        <div class="card-icon">📄</div>
+        <h3>Approved Claim Invoices</h3>
+        <p>Generate invoices for approved claims and export payment-ready documents.</p>
+        <a class="btn btn-outline-primary" asp-page="/Reports/Invoices"><span>Generate Invoices</span></a>
+    </div>
+    <div class="card">
+        <div class="card-icon">📊</div>
+        <h3>Payment Summaries</h3>
+        <p>Produce financial summaries for payroll and month-end reconciliation.</p>
+        <a class="btn btn-outline-primary" asp-page="/Reports/Summary"><span>View Summaries</span></a>
+    </div>
+</div>
