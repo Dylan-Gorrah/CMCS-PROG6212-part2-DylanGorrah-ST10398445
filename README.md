@@ -128,4 +128,4 @@ CMS ASSIGNMENT/
 
 ## 👤 Credits
 
-Built by **Dylan Gorrah** — feel free to adapt the system to fit your automation goals.
+Built by **Dylan Gorrah** 
